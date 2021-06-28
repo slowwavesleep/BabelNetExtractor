@@ -5,6 +5,7 @@ import scala.jdk.CollectionConverters._
 import it.uniroma1.lcl.babelnet.{BabelNet, BabelSynsetIDRelation}
 import it.uniroma1.lcl.babelnet.data.{BabelGloss, BabelPOS}
 import it.uniroma1.lcl.jlt.util.Language
+import it.uniroma1.lcl.babelnet.data.BabelPointer
 
 import scala.collection.mutable
 import scala.collection.mutable.ListBuffer
@@ -14,24 +15,26 @@ object Extract {
   def main(args: Array[String]) = {
 
     val inFile = new File("src/main/resources/nouns_no_header.csv")
-    val outFile = new File("src/main/resources/out.csv")
+    val entriesFile = new File("src/main/resources/bn_entries.csv")
+    val edgesFile = new File("src/main/resources/bn_edges.csv")
 
     val reader = CSVReader.open(inFile)
-    val writer = CSVWriter.open(outFile, append = false)
+    val entryWriter = CSVWriter.open(entriesFile)
+    val edgeWriter = CSVWriter.open(edgesFile)
 
     val bn = BabelNet.getInstance
 
-    reader.foreach(fields => parseLine(fields, bn, writer))
+    reader.foreach(fields => parseEntry(fields, bn, entryWriter, edgeWriter))
     reader.close()
-    writer.close()
+    entryWriter.close()
   }
 
-  def parseLine(line: Seq[Any], babelNet: BabelNet, writer: CSVWriter): Unit = {
+  def parseEntry(entry: Seq[Any], babelNet: BabelNet, entryWriter: CSVWriter, edgeWriter: CSVWriter): Unit = {
 
-    val idLu: String = line(1).toString
-    val word: String = line(2).toString
-    val pos: String = line(3).toString
-    val fnDefinition: String = line(4).toString
+    val idLu: String = entry(1).toString
+    val word: String = entry(2).toString
+    val pos: String = entry(3).toString
+    val fnDefinition: String = entry(4).toString
 
     val synsets = babelNet.getSynsets(word, Language.EN, BabelPOS.NOUN).asScala
 
@@ -43,25 +46,26 @@ object Extract {
       val entryName: String = synset.toString
       val entrySource: String = synset.getSynsetSource.toString
       val bnDefinition: String = getDefinition(glosses)
+//      val edges: String = edgesToString(synset.getEdges(BabelPointer.HYPERNYM).asScala)
       val edges: String = edgesToString(synset.getEdges.asScala)
 
       val extractedEntry: List[String] = List(
-        idLu, word, pos, fnDefinition, entryId, entryName, entrySource, bnDefinition, edges
+        idLu, word, pos, fnDefinition, entryId, entryName, entrySource, bnDefinition
       )
 
-      writer.writeRow(extractedEntry)
+      val entryRelations: List[String] = List(entryId, edges)
 
+      entryWriter.writeRow(extractedEntry)
+      edgeWriter.writeRow(entryRelations)
     }
 
     def edgesToString(edges: mutable.Buffer[BabelSynsetIDRelation]): String = {
-      val edgeIds = new ListBuffer[String]
+      val relations = new ListBuffer[String]
       for (edge <- edges) {
-        edgeIds += edge.getBabelSynsetIDTarget.toString
+        relations += edge.getPointer.toString + "|" + edge.getBabelSynsetIDTarget.toString
       }
-      edgeIds.mkString("|")
+      relations.mkString("||")
     }
-
-
 
     def getDefinition(glosses: mutable.Buffer[BabelGloss]): String = {
       if (glosses.isEmpty) {
@@ -70,11 +74,5 @@ object Extract {
         glosses.head.toString
       }
     }
-
-
-
   }
-
-
-
 }

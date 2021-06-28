@@ -8,3 +8,5 @@ target/
 /.bsp/
 /project/build.properties
 /.idea/
+/src/main/resources/bn_edges.csv
+/src/main/resources/bn_entries.csv
