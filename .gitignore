@@ -1,0 +1,10 @@
+# sbt
+project/project/
+project/target/
+target/
+
+/config/
+
+/.bsp/
+/project/build.properties
+/.idea/
