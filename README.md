@@ -16,7 +16,7 @@ git clone https://github.com/slowwavesleep/BabelNetExtractor.git
 ```
 - Install [IntelliJ IDEA](https://www.jetbrains.com/idea/download/) (Community version will suffice) if you don't have it
 - [Install Scala plugin](https://www.jetbrains.com/help/idea/discover-intellij-idea-for-scala.html)
-- Open the cloned repository with IDEA
+- Open the cloned repository with IDEA (File -> Open)
 - Add BabelNet API to the libraries:
 
   - File -> Project Structure -> `+` -> Java
