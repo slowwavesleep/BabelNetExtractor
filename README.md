@@ -36,4 +36,5 @@ git clone https://github.com/slowwavesleep/BabelNetExtractor.git
 
 - Copy `config` directory from BabelNet API to the project
 - Point to local indices in `config/babelnet.var.properties` (for example, `babelnet.dir=/home/user/BabelNet/BabelNet-3.6`)
-- Run `src/main/scala/Extract.scala` using IDEA (right click, then `Run 'Extract'`
+- Run `src/main/scala/Extract.scala` using IDEA (right click on it, then `Run 'Extract'`)
+- After a few minutes `bn_entries.csv` and `bn_edges.csv` should appear in `src/main/resources`
